@@ -8,6 +8,7 @@ SPA-приложение для визуализации, предиктивно
 **Backend:** Flask (Python), sqlite3.
 **Data Science & Аналитика:** Pandas, NumPy.
 **Интеграция:** eBird API, OpenPyXL
+**Тестирование:** Модульное тестирование (unittest) — 7 автоматических тестов логики данных
 
 ## Ключевой аналитический функционал
 1.  **Детекция аномалий (Z-Score):** Автоматический расчет среднеквадратичного отклонения размеров стаи. Флаг аномалии выставляется налету методами Pandas.
@@ -17,13 +18,21 @@ SPA-приложение для визуализации, предиктивно
 ## Инструкция по локальному развертыванию
 
 ### 1. Настройка Бэкенда (Flask)
-Перейдите в папку с бэкенд-кодом проекта(BirdsMigrationProject/backend):
+**Клонируйте репозиторий и перейдите в корень проекта:**
 ```bash
-#Сначала убедитесь что оболочка активна(в начале строки написано PS)
-# Установка необходимых зависимостей
-pip install -r requirements.txt
-
-# Запуск сервера Flask (по умолчанию на порту 5000)
+git clone [https://github.com/lishajnik/BirdsMigrationProject.git](https://github.com/lishajnik/BirdsMigrationProject.git)
+cd BirdsMigrationProject 
+```
+**Создайте и активируйте виртуальное окружение:**
+```bash
+python -m venv env
+.\env\Scripts\Activate.ps1   # Windows
+source env/bin/activate      # Linux/Mac
+```
+**Установите зависимости бэкенда:**
+pip install -r backend/requirements.txt
+**Запустите Flask-сервер:**
+```bash
 python runserver.py
 ```
 
@@ -43,3 +52,12 @@ npm run dev
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 Это одноразово отключит защиту ТОЛЬКО ДЛЯ ЭТОГО ОКНА, чтобы не копаться в настройках защиты Windows и не подвергать свой компьютер опасности
+
+### Запуск модульных тестов (Unit-tests)
+
+В проекте реализовано автоматическое тестирование бизнес-логики (анализ аномалий Z-Score, расчет коэффициентов корреляции Пирсона и агрегация данных Pandas). 
+
+Для запуска тестов выполните в терминале (с активным виртуальным окружением):
+```bash
+python backend/test.py
+```
