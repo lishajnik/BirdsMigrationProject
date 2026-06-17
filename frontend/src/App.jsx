@@ -10,6 +10,7 @@ const CONTENT_DATA = {
 
 function App() {
     const [activeTab, setActiveTab] = useState('migration');
+    const [isDarkMode, setIsDarkMode] = useState(false);
 
     const [token, setToken] = useState('');
     const [loading, setLoading] = useState(false);
@@ -49,6 +50,14 @@ function App() {
         }
     }, [activeTab]);
 
+    useEffect(() => {
+        if (isDarkMode) {
+            document.body.classList.add('dark');
+        } else {
+            document.body.classList.remove('dark');
+        }
+    }, [isDarkMode]);
+
     const handleSyncMigration = async (e) => {
         e.preventDefault();
         if (!token.trim()) {
@@ -81,7 +90,15 @@ function App() {
     return (
         <div className="container">
             <header>
-                <p className="heading">Love birds forever</p>
+                <div>
+                    <p className="heading" >Love birds forever</p>
+                    <button
+                        className="custom-btn theme-toggle-btn"
+                        onClick={() => setIsDarkMode(!isDarkMode)}
+                    >
+                        {isDarkMode ? '☀️ Светлая' : '🌙 Темная'}
+                    </button>
+                </div>
                 <div className="buttons">
                     <button className={`custom-btn ${activeTab === 'migration' ? 'active selection' : ''}`} onClick={() => setActiveTab('migration')}>Миграция</button>
                     <button className={`custom-btn ${activeTab === 'statistics' ? 'active noname' : ''}`} onClick={() => setActiveTab('statistics')}>Статистика</button>
@@ -91,17 +108,14 @@ function App() {
             </header>
 
             {activeTab && (
-                <div className="info-panel show" style={{ backgroundColor: CONTENT_DATA[activeTab].bgColor }}>
+                <div className={`info-panel show panel-${activeTab}`}>
 
-                    {/* ВКЛАДКА 1: МИГРАЦИЯ */}
                     {activeTab === 'migration' && (
                         <div>
                             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-                                <img className="pic" src="images/Spark.png" alt="icon" style={{ width: '50px' }} />
                                 <p className="heading" style={{ margin: '0 20px' }}>Мониторинг</p>
-                                <img className="line" src="images/Container.png" alt="line" style={{ width: '500px' }} />
                             </div>
-                            <p className="text">Парсинг живых данных орнитологических станций США и запись в SQLite:</p>
+                            <p className="text">Парсинг живых данных орнитологических станций и запись в SQLite:</p>
                             <form onSubmit={handleSyncMigration} style={{ margin: '20px 0', display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap' }}>
                                 <input
                                     type="text"
@@ -111,7 +125,6 @@ function App() {
                                     className="neo-input"
                                 />
 
-                                {/* НАШ НОВЫЙ СЕЛЕКТ РЕГИОНОВ */}
                                 <select
                                     value={region}
                                     onChange={(e) => setRegion(e.target.value)}
@@ -159,47 +172,56 @@ function App() {
                         </div>
                     )}
 
-                    {/* ВКЛАДКА 2: СТАТИСТИКА (PANDAS СЕРВЕРНЫЙ РАСЧЕТ) */}
-                    {activeTab === 'statistics' && (
-                        <div>
+                    {activeTab === 'statistics' && advancedData && advancedData.statistics && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', width: '100%' }}>
                             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-                                <img className="pic" src="images/Brutalism.png" alt="icon" style={{ width: '50px' }} />
                                 <p className="heading" style={{ margin: '0 20px' }}>Био-Статистика</p>
-                                <img className="line" src="images/Container.png" alt="line" style={{ width: '500px' }} />
                             </div>
                             <p className="text">Индекс метеозависимости видов, рассчитанный через корреляцию Пирсона:</p>
 
                             {analyticsLoading && <p className="text">Pandas обрабатывает базу данных...</p>}
                             {analyticsError && <p className="text" style={{ color: 'red' }}>{analyticsError}</p>}
 
-                            {advancedData && advancedData.statistics && (
-                                <div className="stats-grid" style={{ flexDirection: 'column', gap: '15px' }}>
-                                    {advancedData.statistics.map((stat, idx) => (
-                                        <div key={idx} className="stat-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <div>
-                                                <span className="heading" style={{ fontSize: '22px' }}>{stat.bird_name}</span>
-                                                <p className="text" style={{ fontSize: '14px', margin: '5px 0 0 0' }}>Записей в базе: {stat.total_records} | Пиковая стая: {stat.max_flock} птиц</p>
-                                            </div>
-                                            <div style={{ textAlign: 'right' }}>
-                                                <div className="number" style={{ color: stat.sensitivity_index > 50 ? '#FF6B6B' : '#27ae60' }}>
-                                                    {stat.sensitivity_index}%
-                                                </div>
-                                                <span className="text" style={{ fontSize: '14px', fontWeight: 'bold' }}>{stat.status_text}</span>
-                                            </div>
+                            {advancedData.statistics.map((stat, idx) => (
+                                <div
+                                    key={idx}
+                                    className="stat-card"
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        border: stat.anomalies_count > 0 ? '4px solid #FF6B6B' : '3px solid black',
+                                        backgroundColor: stat.anomalies_count > 0 ? '#FFF0F0' : 'white',
+                                        padding: '15px',
+                                        marginBottom: '10px'
+                                    }}
+                                >
+                                    <div>
+                                        <span className="heading" style={{ fontSize: '22px' }}>{stat.bird_name}</span>
+                                        <p className="text" style={{ fontSize: '14px', margin: '5px 0 0 0' }}>
+                                            Записей: {stat.total_records} | Пик: {stat.max_flock} птиц
+                                        </p>
+                                        {stat.anomalies_count > 0 && (
+                                            <p className="text" style={{ fontSize: '12px', color: '#FF6B6B', fontWeight: 'bold', margin: '3px 0 0 0' }}>
+                                                 Найдено математических аномалий: {stat.anomalies_count}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <div className="number" style={{ color: stat.sensitivity_index > 50 ? '#FF6B6B' : '#27ae60', fontSize: '24px', fontWeight: 'bold' }}>
+                                            {stat.sensitivity_index}%
                                         </div>
-                                    ))}
+                                        <span className="text" style={{ fontSize: '14px', fontWeight: 'bold' }}>{stat.status_text}</span>
+                                    </div>
                                 </div>
-                            )}
+                            ))}
                         </div>
                     )}
 
-                    {/* ВКЛАДКА 3: ГРАФИКИ (ДВОЙНОЙ НЕО-ГРАФИК С ПРОГНОЗОМ) */}
                     {activeTab === 'charts' && (
                         <div>
                             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-                                <img className="pic" src="images/Spark.png" alt="icon" style={{ width: '50px' }} />
                                 <p className="heading" style={{ margin: '0 20px' }}>Предиктивные Тренды</p>
-                                <img className="line" src="images/Container.png" alt="line" style={{ width: '500px' }} />
                             </div>
                             <p className="text">Сравнение реальной активности перелетов со среднеквадратичным прогнозом NumPy:</p>
 
@@ -217,9 +239,9 @@ function App() {
                                             return (
                                                 <div key={idx} className="chart-bar-group" style={{ width: '20%' }}>
                                                     <div className="bar-container" style={{ background: '#fcfcfc', display: 'flex', justifyContent: 'center', gap: '8px', padding: '0 5px' }}>
-                                                        {/* Столбик РЕАЛЬНОСТЬ */}
+                                                        
                                                         <div className="bar-fill" style={{ height: actualHeight, backgroundColor: '#45B7D1', title: `Реально: ${item.actual}` }}></div>
-                                                        {/* Столбик ПРОГНОЗ */}
+                                                        
                                                         <div className="bar-fill" style={{ height: predictedHeight, backgroundColor: '#A388EE', title: `Прогноз: ${item.predicted}` }}></div>
                                                     </div>
                                                     <span className="chart-label" style={{ fontSize: '12px' }}>{item.range}</span>
@@ -237,20 +259,25 @@ function App() {
                         </div>
                     )}
 
-                    {/* ВКЛАДКА 4: О ПРОЕКТЕ */}
                     {activeTab === 'about' && (
                         <div>
                             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-                                <img className="pic" src="images/bird.png" alt="icon" style={{ width: '50px' }} />
                                 <p className="heading" style={{ margin: '0 20px' }}>О модуле</p>
-                                <img className="line" src="images/Container.png" alt="line" style={{ width: '500px' }} />
                             </div>
                             <p className="text">
-                                Разработка выполнена в рамках комплексного проекта автоматизации экологического мониторинга.
+                                Сайт направлен на отслеживание статистических данных связанных с миграцией птиц, можно посмотреть графики, таблицы искачать данные, выгружаемые из Ebird.
                             </p>
-                            <p className="text" style={{ marginTop: '15px' }}>
-                                Архитектура приложения связывает воедино реактивный клиентский слой React (Vite), персистентный реляционный файл базы данных SQLite3, аналитический процессор библиотеки Pandas и статистический аппарат прогнозирования NumPy.
-                            </p>
+
+                            <div style={{ marginTop: '30px', paddingTop: '20px', borderTop: '3px dashed black' }}>
+                                <p className="heading" style={{ fontSize: '20px', marginBottom: '15px' }}>Выгрузка отчетности</p>
+                                <a
+                                    href="http://127.0.0.1:5000/api/export-excel"
+                                    className="help-sub-btn"
+                                    style={{ textDecoration: 'none', display: 'inline-block', textAlign: 'center' }}
+                                >
+                                     Скачать полный отчет в Excel
+                                </a>
+                            </div>
                         </div>
                     )}
 

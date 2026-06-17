@@ -1,3 +1,39 @@
+:root {
+    --bg-main: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --text-color: #000000;
+    --border-color: #000000;
+    --panel-migration: #E9E3FF;
+    --panel-statistics: #FFE9E9;
+    --panel-charts: #E3F6FC;
+    --panel-about: #FFF0E6;
+}
+
+.dark {
+    --bg-main: #121214;
+    --bg-card: #26262B;
+    --text-color: #F3F4F6;
+    --border-color: #FFFFFF;
+    --panel-migration: #241A40;
+    --panel-statistics: #401A1A;
+    --panel-charts: #1A3540;
+    --panel-about: #40291A;
+}
+
+body, .container, p, span, h1, h2, th, td {
+    color: var(--text-color);
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.custom-btn, .neo-input, .info-panel, table, th, td, .stat-card {
+    border-color: var(--border-color) !important;
+    color: var(--text-color);
+}
+
+.neo-input {
+    background-color: var(--bg-main);
+    color: var(--text-color);
+}
 
 @font-face {
     font-family: 'Montserrat Local';
@@ -17,8 +53,9 @@ body {
     margin: 0;
     padding-left: 100px;
     font-family: "Montserrat Local", sans-serif;
-    background-color: #fff;
-    color: black;
+    background-color: var(--bg-main);
+    color: var(--text-color);
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .container {
@@ -30,6 +67,7 @@ body {
     font-size: 40px;
     font-weight: bold;
     text-transform: uppercase;
+    margin-bottom: 30px;
 }
 
 .buttons {
@@ -41,19 +79,20 @@ body {
     font-family: "Courier Prime Local", monospace;
     font-size: 20px;
     font-weight: bold;
-    border: 3px solid black;
-    box-shadow: 5px 5px 0px 0px black;
+    border: 3px solid var(--border-color);
+    box-shadow: 5px 5px 0px 0px var(--border-color);
     border-radius: 8px;
     width: 180px;
     height: 58px;
-    background-color: #ffffff;
+    background-color: var(--bg-card);
+    color: var(--text-color);
     cursor: pointer;
-    transition: transform 0.1s, box-shadow 0.1s;
+    transition: transform 0.1s, box-shadow 0.1s, background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
     .custom-btn:active {
         transform: translate(3px, 3px);
-        box-shadow: 2px 2px 0px 0px black;
+        box-shadow: 2px 2px 0px 0px var(--border-color);
     }
 
     .custom-btn.active.selection {
@@ -76,17 +115,35 @@ body {
     width: 1169px;
     min-height: 500px;
     margin-top: 30px;
-    border: 3px solid black;
+    border: 3px solid var(--border-color);
     border-radius: 8px;
     padding: 30px;
-    box-shadow: 6px 6px 0px 0px black;
+    box-shadow: 6px 6px 0px 0px var(--border-color);
+    background-color: var(--panel-color) !important;
     display: none;
     box-sizing: border-box;
+    transition: background-color 0.3s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
     .info-panel.show {
         display: block;
     }
+
+.panel-migration {
+    --panel-color: var(--panel-migration);
+}
+
+.panel-statistics {
+    --panel-color: var(--panel-statistics);
+}
+
+.panel-charts {
+    --panel-color: var(--panel-charts);
+}
+
+.panel-about {
+    --panel-color: var(--panel-about);
+}
 
 .text {
     font-family: "Courier Prime Local", monospace;
@@ -101,9 +158,9 @@ body {
 }
 
 .stat-card {
-    background: white;
-    border: 3px solid black;
-    box-shadow: 4px 4px 0px 0px black;
+    background-color: var(--bg-card);
+    border: 3px solid var(--border-color);
+    box-shadow: 4px 4px 0px 0px var(--border-color);
     padding: 20px;
     border-radius: 8px;
     flex: 1;
@@ -112,7 +169,8 @@ body {
     .stat-card h4 {
         margin: 0 0 10px 0;
         font-size: 16px;
-        color: #555;
+        color: var(--text-color);
+        opacity: 0.7;
     }
 
     .stat-card .number {
@@ -128,10 +186,10 @@ body {
     height: 300px;
     margin: 30px 0;
     padding: 20px;
-    border: 3px solid black;
+    border: 3px solid var(--border-color);
     border-radius: 8px;
-    background: #fff;
-    box-shadow: 5px 5px 0px 0px black;
+    background-color: var(--bg-card);
+    box-shadow: 5px 5px 0px 0px var(--border-color);
 }
 
 .chart-bar-group {
@@ -146,8 +204,8 @@ body {
     display: flex;
     align-items: flex-end;
     width: 100%;
-    background: #f0f0f0;
-    border: 2px solid black;
+    background-color: var(--bg-panel);
+    border: 2px solid var(--border-color);
     border-radius: 4px;
     position: relative;
 }
@@ -155,7 +213,7 @@ body {
 .bar-fill {
     width: 100%;
     background-color: #45B7D1;
-    border-top: 2px solid black;
+    border-top: 2px solid var(--border-color);
     transition: height 0.5s ease-in-out;
 }
 
@@ -168,8 +226,82 @@ body {
 
 select.neo-input {
     appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
     background-repeat: no-repeat;
     background-position: right 10px center;
     padding-right: 40px;
 }
+
+    select.neo-input option {
+        background-color: var(--bg-card);
+        color: var(--text-color);
+    }
+
+table, td {
+    background-color: var(--bg-card) !important;
+    color: var(--text-color) !important;
+    font-family: "Courier Prime Local", monospace;
+}
+
+th {
+    background-color: var(--border-color) !important;
+    color: var(--bg-main) !important;
+    font-family: "Montserrat Local", sans-serif;
+    font-weight: bold;
+}
+
+.stat-card {
+    background-color: var(--bg-card) !important;
+}
+
+    .stat-card h4,
+    .stat-card span {
+        color: var(--text-color) !important;
+    }
+
+    .stat-card .number {
+        color: #228B22 !important;
+    }
+
+.dark .stat-card .number {
+    color: #39FF14 !important;
+}
+
+.theme-toggle-btn {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    width: 140px !important;
+    height: 45px !important;
+    font-size: 16px !important;
+    z-index: 1000;
+}
+
+.help-sub-btn {
+    font-family: "Courier Prime Local", monospace;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    background-color: var(--bg-card);
+    color: var(--text-color);
+    border: 3px solid var(--border-color);
+    box-shadow: 4px 4px 0px 0px var(--border-color);
+    border-radius: 6px;
+    padding: 10px 25px;
+    margin-left: 15px;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.05s, box-shadow 0.05s;
+}
+
+    .help-sub-btn:active:not(:disabled) {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0px 0px var(--border-color);
+    }
+
+    .help-sub-btn:disabled {
+        cursor: not-allowed;
+        background-color: var(--bg-panel);
+        opacity: 0.6;
+        transform: translate(4px, 4px);
+        box-shadow: 0px 0px 0px 0px var(--border-color);
+    }
