@@ -29,7 +29,21 @@ def init_db():
 
 init_db()
 
+@app.route('/api/sightings', methods=['GET'])
+def get_all_sightings():
+    conn = sqlite3.connect('birds_migration.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT bird_name, bird_count, temperature, is_anomalous FROM sightings")
+    rows = cursor.fetchall()
+    
+    data = [
+        {"bird_name": r[0], "bird_count": r[1], "temperature": r[2], "is_anomalous": bool(r[3])} 
+        for r in rows
+    ]
+    return jsonify(data), 200
+
 @app.route('/api/sync-and-calculate', methods=['POST'])
+
 def sync_and_calculate():
     """Вкладка 1: Сбор данных, расчет аномалий через Z-Score и запись в SQLite"""
     data = request.json
@@ -113,9 +127,26 @@ def sync_and_calculate():
 
 @app.route('/api/advanced-analytics', methods=['GET'])
 def advanced_analytics():
-    """Вкладка 2 и 3: Чтение данных с учетом флага аномалий"""
+    """Вкладка 2 и 3: Чтение данных, расчет аналитики и сложный SQL-подзапрос топ-аномалий"""
     try:
         conn = sqlite3.connect(DB_PATH)
+        
+        top_query = """
+            SELECT bird_name, SUM(bird_count) as total
+            FROM sightings
+            WHERE is_anomalous = 1
+            GROUP BY bird_name
+            HAVING total > (
+                SELECT AVG(bird_count) FROM sightings
+            )
+            ORDER BY total DESC
+            LIMIT 3;
+        """
+        cursor = conn.cursor()
+        cursor.execute(top_query)
+        top_birds = cursor.fetchall()
+        top_birds_list = [{"name": r[0], "count": r[1]} for r in top_birds]
+        
         df = pd.read_sql_query("SELECT * FROM sightings", conn)
         conn.close()
 
@@ -159,8 +190,12 @@ def advanced_analytics():
                 predicted_count = int(actual_count * 1.1)
 
             chart_data.append({"range": label, "actual": actual_count, "predicted": predicted_count})
-
-        return jsonify({"status": "success", "statistics": stats_list, "chart_data": chart_data})
+        return jsonify({
+            "status": "success", 
+            "statistics": stats_list, 
+            "chart_data": chart_data,
+            "top_anomalous_birds": top_birds_list
+        })
 
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500

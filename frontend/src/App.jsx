@@ -11,6 +11,7 @@ const CONTENT_DATA = {
 function App() {
     const [activeTab, setActiveTab] = useState('migration');
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [topAnomalous, setTopAnomalous] = useState([]);
 
     const [token, setToken] = useState('');
     const [loading, setLoading] = useState(false);
@@ -32,10 +33,10 @@ function App() {
 
             if (response.ok && result.status === 'success') {
                 setAdvancedData(result);
-            } else if (result.status === 'empty') {
-                setAnalyticsError(result.message);
-            } else {
-                setAnalyticsError('Не удалось прочитать аналитические метрики.');
+
+                if (result.top_anomalous_birds) {
+                    setTopAnomalous(result.top_anomalous_birds);
+                }
             }
         } catch (err) {
             setAnalyticsError('Ошибка подключения к бэкенду. Проверьте Flask.');
@@ -178,6 +179,23 @@ function App() {
                                 <p className="heading" style={{ margin: '0 20px' }}>Био-Статистика</p>
                             </div>
                             <p className="text">Индекс метеозависимости видов, рассчитанный через корреляцию Пирсона:</p>
+
+                            <div className="stat-card anomalous-top-card" style={{ flex: 'none', width: '100%', boxSizing: 'border-box', marginBottom: '15px' }}>
+                                <h4 style={{ margin: 0, fontSize: '18px', textTransform: 'uppercase' }}> ТОП-3 аномальных видов (выше среднего по базе)</h4>
+                                {advancedData.top_anomalous_birds && advancedData.top_anomalous_birds.length > 0 ? (
+                                    <ol style={{ margin: '15px 0 0 0', paddingLeft: '20px', fontFamily: '"Courier Prime Local", monospace', fontSize: '18px' }}>
+                                        {advancedData.top_anomalous_birds.map((bird, index) => (
+                                            <li key={index} style={{ marginBottom: '10px' }}>
+                                                <strong>{bird.name}</strong> — <span className="number" style={{ fontSize: '18px' }}>{bird.count} особей</span>
+                                            </li>
+                                        ))}
+                                    </ol>
+                                ) : (
+                                    <p style={{ fontFamily: '"Courier Prime Local", monospace', fontSize: '16px', marginTop: '10px', margin: '10px 0 0 0' }}>
+                                        Аномальных видов выше среднего не обнаружено
+                                    </p>
+                                )}
+                            </div>
 
                             {analyticsLoading && <p className="text">Pandas обрабатывает базу данных...</p>}
                             {analyticsError && <p className="text" style={{ color: 'red' }}>{analyticsError}</p>}
