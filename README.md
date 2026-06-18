@@ -61,3 +61,9 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```bash
 python backend/test.py
 ```
+
+### Важно 
+
+Сайт который предоставляет API дает только временные ключи, поэтому чтобы проверить работоспособность проекта надо либо связаться со мной в тг: @lishajnik или можно зарегестрироваться на сайте и получить свой ключ https://ebird.org/api/keygen
+
+   
