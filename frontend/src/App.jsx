@@ -28,7 +28,7 @@ function App() {
         setAnalyticsLoading(true);
         setAnalyticsError('');
         try {
-            const response = await fetch('http://127.0.0.1:5000/api/advanced-analytics');
+            const response = await fetch('/api/advanced-analytics');
             const result = await response.json();
 
             if (response.ok && result.status === 'success') {
@@ -69,7 +69,7 @@ function App() {
         setError('');
         setSuccessMessage('');
         try {
-            const response = await fetch('http://127.0.0.1:5000/api/sync-and-calculate', {
+            const response = await fetch('/api/sync-and-calculate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ api_token: token, region: region }),
@@ -289,7 +289,7 @@ function App() {
                             <div style={{ marginTop: '30px', paddingTop: '20px', borderTop: '3px dashed black' }}>
                                 <p className="heading" style={{ fontSize: '20px', marginBottom: '15px' }}>Выгрузка отчетности</p>
                                 <a
-                                    href="http://127.0.0.1:5000/api/export-excel"
+                                    href="/api/export-excel"
                                     className="help-sub-btn"
                                     style={{ textDecoration: 'none', display: 'inline-block', textAlign: 'center' }}
                                 >
